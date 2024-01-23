@@ -3,7 +3,6 @@ package com.example.voting_01.service;
 import com.example.voting_01.dto.CandidateDTO;
 import com.example.voting_01.dto.VoterDTO;
 import com.example.voting_01.model.Candidate;
-import com.example.voting_01.model.Vote;
 import com.example.voting_01.model.Voter;
 
 import java.util.List;
@@ -22,5 +21,5 @@ public interface VotingService {
 
     Candidate createCandidate(String name);
 
-    Vote castVote(Long voterId, Long candidateId);
+    boolean castVote(Long voterId, Long candidateId);
 }

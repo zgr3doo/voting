@@ -19,4 +19,5 @@ public class Voter {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
+    private boolean voted = false;
 }

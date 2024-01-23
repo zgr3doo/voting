@@ -3,14 +3,10 @@ package com.example.voting_01.service;
 import com.example.voting_01.dto.CandidateDTO;
 import com.example.voting_01.dto.VoterDTO;
 import com.example.voting_01.model.Candidate;
-import com.example.voting_01.model.Vote;
 import com.example.voting_01.model.Voter;
 import com.example.voting_01.repository.CandidateRepository;
-import com.example.voting_01.repository.VoteRepository;
 import com.example.voting_01.repository.VoterRepository;
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -34,13 +30,9 @@ class VotingServiceImplIntegrationTest {
     @Autowired
     VoterRepository voterRepository;
     @Autowired
-    VoteRepository voteRepository;
-    @Autowired
     CandidateRepository candidateRepository;
     @Autowired
     VotingServiceImpl sut;
-    @PersistenceContext
-    EntityManager em;
 
     @Test
     void listVoters() {
@@ -98,7 +90,7 @@ class VotingServiceImplIntegrationTest {
         Voter voter = createVoter("Spiderman", voterRepository);
         Candidate candidate = createCandidate("Mickey Mouse", candidateRepository);
         // when
-        Vote actual = sut.castVote(voter.getId(), candidate.getId());
+        boolean actual = sut.castVote(voter.getId(), candidate.getId());
 
         // then
         VoterDTO voterDTO = sut.getVoterDtoById(voter.getId())
@@ -106,14 +98,13 @@ class VotingServiceImplIntegrationTest {
         CandidateDTO candidateDTO = sut.getCandidateDtoById(candidate.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Candidate not found"));
 
-        Assertions.assertEquals(voter.getId(), actual.getVoterId());
-        Assertions.assertEquals(candidate.getId(), actual.getCandidateId());
+        Assertions.assertTrue(actual);
         Assertions.assertEquals(1L, candidateDTO.getVotes());
         Assertions.assertTrue(voterDTO.isVoted());
     }
 
     @Test
-    void castVoteCollisionTest() throws InterruptedException {
+    void castVoteCollisionTest() {
         // given
         final int threadCount = 2;
         CountDownLatch readyLatch = new CountDownLatch(threadCount);
@@ -148,7 +139,7 @@ class VotingServiceImplIntegrationTest {
     }
 
     @Test
-    void castVoteDuplicateCollisionTest() throws InterruptedException {
+    void castVoteDuplicateCollisionTest() {
         // given
         final int threadCount = 2;
         CountDownLatch readyLatch = new CountDownLatch(threadCount);
@@ -183,7 +174,7 @@ class VotingServiceImplIntegrationTest {
     @Test
     void castVoteWaitAndCatchFireTest() {
         // given
-        final int threadCount = 200;
+        final int threadCount = 15000;
         CountDownLatch readyLatch = new CountDownLatch(threadCount);
         Candidate candidate = createCandidate("Mickey Mouse", candidateRepository);
         Runnable action = () -> {

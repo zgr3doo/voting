@@ -3,7 +3,6 @@ package com.example.voting_01.controller;
 import com.example.voting_01.dto.CandidateDTO;
 import com.example.voting_01.dto.VoterDTO;
 import com.example.voting_01.model.Candidate;
-import com.example.voting_01.model.Vote;
 import com.example.voting_01.model.Voter;
 import com.example.voting_01.service.VotingService;
 import org.springframework.web.bind.annotation.*;
@@ -40,7 +39,7 @@ public class MainController {
     }
 
     @PutMapping("/vote/{voterId}/for/{candidateId}")
-    Vote castVote(@PathVariable Long voterId, @PathVariable Long candidateId) {
+    boolean castVote(@PathVariable Long voterId, @PathVariable Long candidateId) {
         return votingService.castVote(voterId, candidateId);
     }
 }
